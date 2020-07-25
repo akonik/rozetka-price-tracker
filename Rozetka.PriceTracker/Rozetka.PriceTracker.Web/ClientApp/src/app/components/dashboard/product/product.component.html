@@ -1,0 +1,9 @@
+<div class="product" [class.unavailable]="!isAvailable">
+    <div class="product-image" [style.background-image]="getImageUrl(product.imageurl)">
+   
+    </div>
+    <p class="price">{{product.price}} ₴</p>
+    <hr/>
+    <a class="title" title="{{product.title}}" href="{{product.url}}" target="_blank">{{product.title}}</a>
+   
+</div>

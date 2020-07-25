@@ -102,3 +102,23 @@ dist
 
 # TernJS port file
 .tern-port
+/Rozetka.PriceTracker/Rozetka.PriceTracker.BackgroundWorkers/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.BackgroundWorkers/bin
+
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Models/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Models/bin
+
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Web/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Web/bin
+
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Grpc/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Grpc/bin
+
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Services/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Services/bin
+
+/Rozetka.PriceTracker/Rozetka.PriceTracker.EntityFramework/obj
+/Rozetka.PriceTracker/Rozetka.PriceTracker.EntityFramework/bin
+
+/Rozetka.PriceTracker/.vs
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Grpc/*.user
