@@ -16,7 +16,7 @@ namespace Rozetka.PriceTracker.Grpc.Services
         private readonly IProductLoaderService _productLoaderService;
         private readonly IProductsService _productsService;
 
-        public PriceTrackerService(ILogger<PriceTrackerService> logger, 
+        public PriceTrackerService(ILogger<PriceTrackerService> logger,
             IProductLoaderService productLoaderService,
             IProductsService productsService)
         {
@@ -32,10 +32,10 @@ namespace Rozetka.PriceTracker.Grpc.Services
             if (product != null)
             {
                 var savedProduct = await _productsService.AddOrUpdateProductAsync(product);
-                
+
                 if (savedProduct != null)
                 {
-                    return new TrackProductResponse
+                    var productResponse = new TrackProductResponse
                     {
                         Description = savedProduct.Description,
                         Discount = savedProduct.Discount,
@@ -45,8 +45,21 @@ namespace Rozetka.PriceTracker.Grpc.Services
                         Title = savedProduct.Title,
                         Url = savedProduct.Href,
                         SellStatus = savedProduct.SellStatus,
-                        Status = savedProduct.Status
+                        Status = savedProduct.Status,
+                        PrevPrice = (float)(savedProduct.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? savedProduct.Price)
                     };
+
+                    productResponse.AdditionalPrices.AddRange(savedProduct.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                    {
+                        Description = x.Description,
+                        DiscountPrice = (float)x.DiscountPrice,
+                        Id = x.Id,
+                        LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated),
+                        ProductId = x.ProductId,
+                        Title = x.Title
+                    }));
+
+                    return productResponse;
                 }
             }
 
@@ -73,10 +86,10 @@ namespace Rozetka.PriceTracker.Grpc.Services
                                 Title = product.Title,
                                 Url = product.Href,
                                 SellStatus = product.SellStatus,
-                                Status = product.Status
+                                Status = product.Status,
                             });
 
-             
+
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(15));
@@ -93,22 +106,95 @@ namespace Rozetka.PriceTracker.Grpc.Services
             var productsList = await _productsService.GetProductsAsync();
 
             var response = new TrackProductPriceResponse();
-            
-            response.Products.AddRange(productsList.Select(product => new TrackProductResponse
+            foreach (var product in productsList)
             {
-                Description = product.Description,
-                Discount = product.Discount,
-                Id = (int)product.Id,
-                ImageUrl = product.ImageUrl,
-                Price = (float)product.Price,
-                Title = product.Title,
-                Url = product.Href,
-                SellStatus = product.SellStatus,
-                Status = product.Status
-            }));
+                var responseProduct = new TrackProductResponse
+                {
+                    Description = product.Description,
+                    Discount = product.Discount,
+                    Id = (int)product.Id,
+                    ImageUrl = product.ImageUrl,
+                    Price = (float)product.Price,
+                    Title = product.Title,
+                    Url = product.Href,
+                    SellStatus = product.SellStatus,
+                    Status = product.Status,
+                    PrevPrice = (float)(product.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? product.Price)
+                };
+
+                responseProduct.AdditionalPrices.AddRange(product.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                {
+                    Description = x.Description,
+                    DiscountPrice = (float)x.DiscountPrice,
+                    Id = x.Id,
+                    LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated.ToUniversalTime()),
+                    ProductId = x.ProductId,
+                    Title = x.Title
+                }));
+                
+                response.Products.Add(responseProduct);
+
+                
+            }
+
+
+
 
             return response;
-            
+
+        }
+
+        public override async Task<ProductInfoResponse> GetProductInfo(GetProductInfoRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var product = await _productsService.GetProductAsync(request.ProductId);
+
+
+                if (product == null)
+                    return null;
+
+                var response = new ProductInfoResponse();
+
+                response.Prices.AddRange(product.PriceHistory.Select(x => new PorductPriceHistoryResponse
+                {
+                    ProductId = product.Id,
+                    Id = x.Id,
+                    Date = Timestamp.FromDateTime(x.LastUpdated.ToUniversalTime()),
+                    Price = (float)x.Price
+                }));
+
+                response.ProductInfo = new TrackProductResponse
+                {
+                    Description = product.Description,
+                    Discount = product.Discount,
+                    Id = (int)product.Id,
+                    ImageUrl = product.ImageUrl,
+                    Price = (float)product.Price,
+                    Title = product.Title,
+                    Url = product.Href,
+                    SellStatus = product.SellStatus,
+                    Status = product.Status
+                };
+
+                response.ProductInfo.AdditionalPrices.AddRange(product.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                {
+                    Description = x.Description,
+                    DiscountPrice = (float)x.DiscountPrice,
+                    Id = x.Id,
+                    LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated.ToUniversalTime()),
+                    ProductId = x.ProductId,
+                    Title = x.Title
+                }));
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return null;
         }
 
     }

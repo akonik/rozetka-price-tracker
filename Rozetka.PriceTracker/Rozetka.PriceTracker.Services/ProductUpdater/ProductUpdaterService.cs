@@ -80,11 +80,21 @@ namespace Rozetka.PriceTracker.Services.ProductUpdater
                 {
                     var loadedAdditionalPrices = await _productLoader.LoadAdditionalPricesAsync(product.ExternalProductId);
 
+                    if(product.AdditionalPrices.Count() != loadedAdditionalPrices.Count())
+                    {
+                        foreach(var productAdditionalPrice in product.AdditionalPrices)
+                        {
+                            productAdditionalPrice.IsActive = false;
+                        }
+
+                        _context.UpdateRange(product.AdditionalPrices);
+                    }
+
                     foreach (var additionalPrice in loadedAdditionalPrices)
                     {
                         additionalPrice.ProductId = product.Id;
 
-                        var savedAdditionalPrice = product?.AdditionalPrices?.FirstOrDefault(x => x.ExternalId == additionalPrice.ExternalId);
+                        var savedAdditionalPrice = product?.AdditionalPrices?.FirstOrDefault(x => x.ExternalId == additionalPrice.ExternalId && x.IsActive);
                        
                         if (savedAdditionalPrice == null)
                         {
@@ -100,18 +110,7 @@ namespace Rozetka.PriceTracker.Services.ProductUpdater
                     }
                 }
 
-                //foreach(var product in productsToUpdate)
-                //{
-                //    var inactiveAdditionalPrices = product.AdditionalPrices.Where(x => loadedAdditionalPrices.Where(w => w.ProductId == product.Id).Count(a => a.Id == x.Id) == 0).ToList();
-
-                //    foreach(var inactiveAdditionalPrice in inactiveAdditionalPrices)
-                //    {
-                //        inactiveAdditionalPrice.IsActive = false;
-                //        inactiveAdditionalPrice.LastUpdated = DateTime.Now;
-                //    }
-
-                //    _context.UpdateRange(inactiveAdditionalPrices);
-                //}
+               
 
                 await _context.SaveChangesAsync();
             }

@@ -1,6 +1,3 @@
-<p>
-  price-tracker works!
-</p>
 <div class="product-container">
   <app-product *ngFor="let item of products | async;let i = index" [product]="item">{{i}}</app-product>
   <div class="add-product product" (click)="openDialog()"><div class="circle"></div></div>

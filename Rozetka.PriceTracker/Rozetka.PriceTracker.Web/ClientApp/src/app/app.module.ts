@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -14,13 +14,19 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { AddProductComponent } from './components/dashboard/add-product/add-product.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
+import { ChartsModule } from 'ng2-charts';
+import { ProductPriceHistoryComponent } from './components/dashboard/product-price-history/product-price-history.component';
+import { ProductDetailsComponent } from './components/dashboard/product-details/product-details.component';
+
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     PriceTrackerComponent,
     ProductComponent,
-    AddProductComponent
+    AddProductComponent,
+    ProductPriceHistoryComponent ,
+    ProductDetailsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -29,10 +35,12 @@ import { MatButtonModule } from '@angular/material/button';
     MatDialogModule,
     MatInputModule,
     RouterModule.forRoot([
-      { path: "", component: PriceTrackerComponent }
+      { path: "", component: PriceTrackerComponent },
+      { path: "info/:id", component: ProductPriceHistoryComponent }
     ]),
     BrowserAnimationsModule,
     MatButtonModule,
+    ChartsModule
 
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },

@@ -32,11 +32,21 @@ type PriceTrackerTrackProductStream = {
   readonly responseType: typeof src_app_protos_price_track_pb.TrackProductResponse;
 };
 
+type PriceTrackerGetProductInfo = {
+  readonly methodName: string;
+  readonly service: typeof PriceTracker;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof src_app_protos_price_track_pb.GetProductInfoRequest;
+  readonly responseType: typeof src_app_protos_price_track_pb.ProductInfoResponse;
+};
+
 export class PriceTracker {
   static readonly serviceName: string;
   static readonly TrackProduct: PriceTrackerTrackProduct;
   static readonly TrackPrices: PriceTrackerTrackPrices;
   static readonly TrackProductStream: PriceTrackerTrackProductStream;
+  static readonly GetProductInfo: PriceTrackerGetProductInfo;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -90,5 +100,14 @@ export class PriceTrackerClient {
     callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.TrackProductPriceResponse|null) => void
   ): UnaryResponse;
   trackProductStream(requestMessage: src_app_protos_price_track_pb.TrackProductRequest, metadata?: grpc.Metadata): ResponseStream<src_app_protos_price_track_pb.TrackProductResponse>;
+  getProductInfo(
+    requestMessage: src_app_protos_price_track_pb.GetProductInfoRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.ProductInfoResponse|null) => void
+  ): UnaryResponse;
+  getProductInfo(
+    requestMessage: src_app_protos_price_track_pb.GetProductInfoRequest,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.ProductInfoResponse|null) => void
+  ): UnaryResponse;
 }
 

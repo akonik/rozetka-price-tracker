@@ -38,6 +38,15 @@ PriceTracker.TrackProductStream = {
   responseType: src_app_protos_price_track_pb.TrackProductResponse
 };
 
+PriceTracker.GetProductInfo = {
+  methodName: "GetProductInfo",
+  service: PriceTracker,
+  requestStream: false,
+  responseStream: false,
+  requestType: src_app_protos_price_track_pb.GetProductInfoRequest,
+  responseType: src_app_protos_price_track_pb.ProductInfoResponse
+};
+
 exports.PriceTracker = PriceTracker;
 
 function PriceTrackerClient(serviceHost, options) {
@@ -141,6 +150,37 @@ PriceTrackerClient.prototype.trackProductStream = function trackProductStream(re
     },
     cancel: function () {
       listeners = null;
+      client.close();
+    }
+  };
+};
+
+PriceTrackerClient.prototype.getProductInfo = function getProductInfo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(PriceTracker.GetProductInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
       client.close();
     }
   };

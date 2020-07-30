@@ -24,8 +24,11 @@ export class ProductComponent implements OnInit {
   }
 
   get isAvailable(){
-    return this.product.sellStatus === 'available';
+    return this.product.sellStatus === 'available' || this.product.sellStatus === 'limited';
   }
   
+  get priceDiff(){
+    return this.product.price - this.product.prevPrice;
+  }
 
 }

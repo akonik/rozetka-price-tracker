@@ -58,9 +58,19 @@ namespace Rozetka.PriceTracker.Services.Products
             return await _context.Products
                 .AsNoTracking()
                 .Include(x => x.PriceHistory)
+                .Include(x => x.AdditionalPrices)
                 .OrderBy(x => x.SellStatus)
                 .ThenByDescending(x => x.CreatedOn)
                 .ToListAsync();
+        }
+
+        public async Task<Product> GetProductAsync(long productId)
+        {
+            return await _context.Products
+                 .AsNoTracking()
+                 .Include(x => x.PriceHistory)
+                 .Include(x => x.AdditionalPrices)
+                 .FirstOrDefaultAsync(x => x.Id == productId);
         }
     }
 }
