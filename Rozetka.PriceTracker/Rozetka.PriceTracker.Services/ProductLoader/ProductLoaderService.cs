@@ -17,7 +17,9 @@ namespace Rozetka.PriceTracker.Services.ProductLoader
     {
         private readonly RozetkaOptions _rozetkaOptions;
         private readonly ILogger<ProductLoaderService> _logger;
+        
         private readonly Regex ParseProductIdRegex = new Regex("https:\\/\\/(.+)?rozetka.com.ua\\/(?<name>\\w+)\\/p(?<id>\\d+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        
         public ProductLoaderService(IOptions<RozetkaOptions> rozetkaOptions, ILogger<ProductLoaderService> logger)
         {
             _rozetkaOptions = rozetkaOptions.Value;
@@ -29,6 +31,7 @@ namespace Rozetka.PriceTracker.Services.ProductLoader
             try
             {
                 long productId = ParseProductIdFromHref(productHref);
+
                 if (productId > 0)
                 {
                     var product = (await LoadRozetkaProductAsync(productId)).First(); ;
@@ -164,6 +167,7 @@ namespace Rozetka.PriceTracker.Services.ProductLoader
         private async Task<IEnumerable<RozetkaProduct>> LoadRozetkaProductAsync(params long[] productIds)
         {
             HttpClient httpClient = null;
+
             List<RozetkaProduct> loadedProducts = new List<RozetkaProduct>();
             try
             {
@@ -200,20 +204,28 @@ namespace Rozetka.PriceTracker.Services.ProductLoader
 
         private long ParseProductIdFromHref(string href)
         {
+            
             long productId = -1;
-            var match = ParseProductIdRegex.Match(href);
-
-            if (match.Success)
+            try
             {
-                string productIdValue = match.Groups["id"].Value;
+                Match match = ParseProductIdRegex.Match(href);
 
-                if (string.IsNullOrEmpty(productIdValue))
-                    return -1;
-
-                if (long.TryParse(productIdValue, out productId))
+                if (match.Success)
                 {
-                    return productId;
+                    string productIdValue = match.Groups["id"].Value;
+
+                    if (string.IsNullOrEmpty(productIdValue))
+                        return -1;
+
+                    if (long.TryParse(productIdValue, out productId))
+                    {
+                        return productId;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error has occurred when trying to get product id from href. Href = {href}. {ex}");
             }
 
 

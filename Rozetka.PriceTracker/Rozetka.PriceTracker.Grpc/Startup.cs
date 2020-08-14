@@ -32,8 +32,11 @@ namespace Rozetka.PriceTracker.Grpc
 
             services.AddDbContextPool<RozetkaDbContext>(options =>
              options.UseSqlServer(
-                Configuration.GetConnectionString("DefaultConnection"), sqlServerOptionsAction: action => action.EnableRetryOnFailure(
-                                       maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null)));
+                Configuration.GetConnectionString("DefaultConnection"),
+                sqlServerOptionsAction: action =>
+                {
+                    action.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null);
+                }));
 
             services.AddCors(options =>
             {
@@ -72,7 +75,6 @@ namespace Rozetka.PriceTracker.Grpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb();
                 endpoints.MapGrpcService<PriceTrackerService>().EnableGrpcWeb();
 
                 endpoints.MapGet("/", async context =>

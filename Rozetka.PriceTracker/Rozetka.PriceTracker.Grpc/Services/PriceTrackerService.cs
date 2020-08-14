@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
 using Rozetka.PriceTracker.Services.ProductLoader;
 using Rozetka.PriceTracker.Services.Products;
@@ -27,40 +26,47 @@ namespace Rozetka.PriceTracker.Grpc.Services
 
         public override async Task<TrackProductResponse> TrackProduct(TrackProductRequest request, ServerCallContext context)
         {
-            var product = await _productLoaderService.LoadProductAsync(request.ProductUrl);
-
-            if (product != null)
+            try
             {
-                var savedProduct = await _productsService.AddOrUpdateProductAsync(product);
+                var product = await _productLoaderService.LoadProductAsync(request.ProductUrl);
 
-                if (savedProduct != null)
+                if (product != null)
                 {
-                    var productResponse = new TrackProductResponse
-                    {
-                        Description = savedProduct.Description,
-                        Discount = savedProduct.Discount,
-                        Id = (int)savedProduct.Id,
-                        ImageUrl = savedProduct.ImageUrl,
-                        Price = (float)savedProduct.Price,
-                        Title = savedProduct.Title,
-                        Url = savedProduct.Href,
-                        SellStatus = savedProduct.SellStatus,
-                        Status = savedProduct.Status,
-                        PrevPrice = (float)(savedProduct.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? savedProduct.Price)
-                    };
+                    var savedProduct = await _productsService.AddOrUpdateProductAsync(product);
 
-                    productResponse.AdditionalPrices.AddRange(savedProduct.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                    if (savedProduct != null)
                     {
-                        Description = x.Description,
-                        DiscountPrice = (float)x.DiscountPrice,
-                        Id = x.Id,
-                        LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated),
-                        ProductId = x.ProductId,
-                        Title = x.Title
-                    }));
+                        var productResponse = new TrackProductResponse
+                        {
+                            Description = savedProduct.Description,
+                            Discount = savedProduct.Discount,
+                            Id = (int)savedProduct.Id,
+                            ImageUrl = savedProduct.ImageUrl,
+                            Price = (float)savedProduct.Price,
+                            Title = savedProduct.Title,
+                            Url = savedProduct.Href,
+                            SellStatus = savedProduct.SellStatus,
+                            Status = savedProduct.Status,
+                            PrevPrice = (float)(savedProduct.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? savedProduct.Price)
+                        };
 
-                    return productResponse;
+                        productResponse.AdditionalPrices.AddRange(savedProduct.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                        {
+                            Description = x.Description,
+                            DiscountPrice = (float)x.DiscountPrice,
+                            Id = x.Id,
+                            LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated),
+                            ProductId = x.ProductId,
+                            Title = x.Title
+                        }));
+
+                        return productResponse;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error has occurred when trying to add product for price tracking. {ex}");
             }
 
             return null;
@@ -103,44 +109,48 @@ namespace Rozetka.PriceTracker.Grpc.Services
 
         public override async Task<TrackProductPriceResponse> TrackPrices(Empty request, ServerCallContext context)
         {
-            var productsList = await _productsService.GetProductsAsync();
-
-            var response = new TrackProductPriceResponse();
-            foreach (var product in productsList)
+            try
             {
-                var responseProduct = new TrackProductResponse
-                {
-                    Description = product.Description,
-                    Discount = product.Discount,
-                    Id = (int)product.Id,
-                    ImageUrl = product.ImageUrl,
-                    Price = (float)product.Price,
-                    Title = product.Title,
-                    Url = product.Href,
-                    SellStatus = product.SellStatus,
-                    Status = product.Status,
-                    PrevPrice = (float)(product.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? product.Price)
-                };
+                var productsList = await _productsService.GetProductsAsync();
 
-                responseProduct.AdditionalPrices.AddRange(product.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                var response = new TrackProductPriceResponse();
+                foreach (var product in productsList)
                 {
-                    Description = x.Description,
-                    DiscountPrice = (float)x.DiscountPrice,
-                    Id = x.Id,
-                    LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated.ToUniversalTime()),
-                    ProductId = x.ProductId,
-                    Title = x.Title
-                }));
-                
-                response.Products.Add(responseProduct);
+                    var responseProduct = new TrackProductResponse
+                    {
+                        Description = product.Description,
+                        Discount = product.Discount,
+                        Id = (int)product.Id,
+                        ImageUrl = product.ImageUrl,
+                        Price = (float)product.Price,
+                        Title = product.Title,
+                        Url = product.Href,
+                        SellStatus = product.SellStatus,
+                        Status = product.Status,
+                        PrevPrice = (float)(product.PriceHistory?.OrderByDescending(x => x.LastUpdated).FirstOrDefault()?.Price ?? product.Price)
+                    };
 
-                
+                    responseProduct.AdditionalPrices.AddRange(product.AdditionalPrices.Select(x => new ProductAdditionalPricesResponse
+                    {
+                        Description = x.Description,
+                        DiscountPrice = (float)x.DiscountPrice,
+                        Id = x.Id,
+                        LastUpdatedOn = Timestamp.FromDateTime(x.LastUpdated.ToUniversalTime()),
+                        ProductId = x.ProductId,
+                        Title = x.Title
+                    }));
+
+                    response.Products.Add(responseProduct);
+                }
+
+                return response;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error has occurred when trying to get products to prices track. {ex}");
             }
 
-
-
-
-            return response;
+            return null;
 
         }
 
@@ -191,7 +201,7 @@ namespace Rozetka.PriceTracker.Grpc.Services
             }
             catch (Exception ex)
             {
-
+                _logger.LogError($"An error has occurred when trying to get product info. {ex}");
             }
 
             return null;
