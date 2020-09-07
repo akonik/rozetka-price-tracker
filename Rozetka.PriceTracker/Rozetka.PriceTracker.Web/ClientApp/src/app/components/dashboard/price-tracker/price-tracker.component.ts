@@ -3,7 +3,7 @@ import { AddProductComponent } from '../add-product/add-product.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PriceTrackerClient, ResponseStream } from 'src/app/generated/src/app/protos/price_track_pb_service';
 import { environment } from 'src/environments/environment';
-import { TrackProductRequest, TrackProductResponse, TrackProductPriceResponse } from 'src/app/generated/src/app/protos/price_track_pb';
+import { TrackProductRequest, TrackProductResponse, TrackProductPriceResponse, DeleteTrackingProductRequest } from 'src/app/generated/src/app/protos/price_track_pb';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Observable, interval, Subscription, timer, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -69,6 +69,21 @@ export class PriceTrackerComponent implements OnInit, OnDestroy {
         let products = [...value, response.toObject()];
         this.productsBehaviorSubject.next(products);
       });
+    });
+  }
+
+  public onDroductDelete(id: number) {
+    const request = new DeleteTrackingProductRequest();
+    request.setProductId(id);
+    this._client.deleteProduct(request, (error, response) => {
+      let responseObject = response.toObject();
+      if (responseObject.isSuccess) {
+
+        this.products$.pipe(take(1)).subscribe(value => {
+          let products = value.filter(x=>x.id != id);
+          this.productsBehaviorSubject.next(products);
+        });
+      }
     });
   }
 

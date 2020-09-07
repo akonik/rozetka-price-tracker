@@ -47,6 +47,15 @@ PriceTracker.GetProductInfo = {
   responseType: src_app_protos_price_track_pb.ProductInfoResponse
 };
 
+PriceTracker.DeleteProduct = {
+  methodName: "DeleteProduct",
+  service: PriceTracker,
+  requestStream: false,
+  responseStream: false,
+  requestType: src_app_protos_price_track_pb.DeleteTrackingProductRequest,
+  responseType: src_app_protos_price_track_pb.DeleteTrackingProductResponse
+};
+
 exports.PriceTracker = PriceTracker;
 
 function PriceTrackerClient(serviceHost, options) {
@@ -160,6 +169,37 @@ PriceTrackerClient.prototype.getProductInfo = function getProductInfo(requestMes
     callback = arguments[1];
   }
   var client = grpc.unary(PriceTracker.GetProductInfo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+PriceTrackerClient.prototype.deleteProduct = function deleteProduct(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(PriceTracker.DeleteProduct, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

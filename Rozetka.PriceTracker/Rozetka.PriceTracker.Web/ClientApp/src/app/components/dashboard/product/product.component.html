@@ -14,5 +14,7 @@
 
     <hr />
     <a class="title" title="{{product.title}}" href="{{product.url}}" target="_blank">{{product.title}}</a>
-
+    <span class="remove" title="Delete product" (click)="deleteProduct($event)">
+        <span class="remove-sign">X</span>
+    </span>
 </div>

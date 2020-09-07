@@ -41,12 +41,22 @@ type PriceTrackerGetProductInfo = {
   readonly responseType: typeof src_app_protos_price_track_pb.ProductInfoResponse;
 };
 
+type PriceTrackerDeleteProduct = {
+  readonly methodName: string;
+  readonly service: typeof PriceTracker;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof src_app_protos_price_track_pb.DeleteTrackingProductRequest;
+  readonly responseType: typeof src_app_protos_price_track_pb.DeleteTrackingProductResponse;
+};
+
 export class PriceTracker {
   static readonly serviceName: string;
   static readonly TrackProduct: PriceTrackerTrackProduct;
   static readonly TrackPrices: PriceTrackerTrackPrices;
   static readonly TrackProductStream: PriceTrackerTrackProductStream;
   static readonly GetProductInfo: PriceTrackerGetProductInfo;
+  static readonly DeleteProduct: PriceTrackerDeleteProduct;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -108,6 +118,15 @@ export class PriceTrackerClient {
   getProductInfo(
     requestMessage: src_app_protos_price_track_pb.GetProductInfoRequest,
     callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.ProductInfoResponse|null) => void
+  ): UnaryResponse;
+  deleteProduct(
+    requestMessage: src_app_protos_price_track_pb.DeleteTrackingProductRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.DeleteTrackingProductResponse|null) => void
+  ): UnaryResponse;
+  deleteProduct(
+    requestMessage: src_app_protos_price_track_pb.DeleteTrackingProductRequest,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_price_track_pb.DeleteTrackingProductResponse|null) => void
   ): UnaryResponse;
 }
 

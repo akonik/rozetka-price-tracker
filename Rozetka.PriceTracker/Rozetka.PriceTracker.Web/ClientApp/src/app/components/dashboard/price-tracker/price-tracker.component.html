@@ -1,4 +1,4 @@
 <div class="product-container">
-  <app-product *ngFor="let item of products | async;let i = index" [product]="item">{{i}}</app-product>
+  <app-product *ngFor="let item of products | async;let i = index" [product]="item" (onProductDelete)="onDroductDelete($event)">{{i}}</app-product>
   <div class="add-product product" (click)="openDialog()"><div class="circle"></div></div>
 </div>

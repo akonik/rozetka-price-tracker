@@ -5,6 +5,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Rozetka.PriceTracker.Grpc.Features.DeleteProduct;
 using Rozetka.PriceTracker.Grpc.Features.GetProductInfo;
 using Rozetka.PriceTracker.Grpc.Features.GetProducts;
 using Rozetka.PriceTracker.Grpc.Features.LoadProduct;
@@ -54,40 +55,6 @@ namespace Rozetka.PriceTracker.Grpc.Services
 
         }
 
-        public override async Task TrackProductStream(TrackProductRequest request, IServerStreamWriter<TrackProductResponse> responseStream, ServerCallContext context)
-        {
-            while (!context.CancellationToken.IsCancellationRequested)
-            {
-                var product = await _productLoaderService.LoadProductAsync(request.ProductUrl);
-
-                if (product != null)
-                {
-                    await responseStream.WriteAsync(
-                            new TrackProductResponse
-                            {
-                                Description = product.Description,
-                                Discount = product.Discount,
-                                Id = (int)product.Id,
-                                ImageUrl = product.ImageUrl,
-                                Price = (float)product.Price,
-                                Title = product.Title,
-                                Url = product.Href,
-                                SellStatus = product.SellStatus,
-                                Status = product.Status,
-                            });
-
-
-                }
-
-                await Task.Delay(TimeSpan.FromSeconds(15));
-            }
-
-            if (context.CancellationToken.IsCancellationRequested)
-            {
-                Console.WriteLine("Stream canceled");
-            }
-        }
-
         public override async Task<TrackProductPriceResponse> TrackPrices(Empty request, ServerCallContext context)
         {
             try
@@ -116,6 +83,21 @@ namespace Rozetka.PriceTracker.Grpc.Services
 
             return null;
         }
+
+        public override async Task<DeleteTrackingProductResponse> DeleteProduct(DeleteTrackingProductRequest request, ServerCallContext context)
+        {
+            try
+            {
+                return await _mediator.Send(new DeleteProductCommand() { ProductId = request.ProductId });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error has occurred when trying to delete product info. {ex}");
+            }
+
+            return null;
+        }
+
 
     }
 }

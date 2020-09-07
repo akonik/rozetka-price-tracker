@@ -69,6 +69,46 @@ export namespace TrackProductPriceResponse {
   }
 }
 
+export class DeleteTrackingProductRequest extends jspb.Message {
+  getProductId(): number;
+  setProductId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteTrackingProductRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteTrackingProductRequest): DeleteTrackingProductRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DeleteTrackingProductRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteTrackingProductRequest;
+  static deserializeBinaryFromReader(message: DeleteTrackingProductRequest, reader: jspb.BinaryReader): DeleteTrackingProductRequest;
+}
+
+export namespace DeleteTrackingProductRequest {
+  export type AsObject = {
+    productId: number,
+  }
+}
+
+export class DeleteTrackingProductResponse extends jspb.Message {
+  getIsSuccess(): boolean;
+  setIsSuccess(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteTrackingProductResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteTrackingProductResponse): DeleteTrackingProductResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DeleteTrackingProductResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteTrackingProductResponse;
+  static deserializeBinaryFromReader(message: DeleteTrackingProductResponse, reader: jspb.BinaryReader): DeleteTrackingProductResponse;
+}
+
+export namespace DeleteTrackingProductResponse {
+  export type AsObject = {
+    isSuccess: boolean,
+  }
+}
+
 export class TrackProductResponse extends jspb.Message {
   getId(): number;
   setId(value: number): void;
