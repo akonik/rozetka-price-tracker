@@ -40,11 +40,14 @@ export class ProductPriceHistoryComponent implements OnInit {
 
       this.lineChartData[0].data.push(product.productinfo.price);
 
-      this._lineChatrLabels = [...this.productInfoBehaviorSubject.value.pricesList.map(x => this.formatDate(new Date(0, 0, 0, 0, 0, x.date.seconds))), this.formatDate(new Date())];
+      this._lineChatrLabels = [
+        ...this.productInfoBehaviorSubject.value.pricesList.map(
+          x => this.formatDate(new Date(1970, 0, 0, 0, 0, x.date.seconds))),
+        this.formatDate(new Date())];
     });
   }
 
-  get product(){
+  get product() {
     if (this.productInfoBehaviorSubject.value)
       return this.productInfoBehaviorSubject.value.productinfo;
   }
@@ -65,22 +68,6 @@ export class ProductPriceHistoryComponent implements OnInit {
   }
 
   public lineChartColors: Color[] = [
-    // { // grey
-    //   backgroundColor: 'rgba(148,159,177,0.2)',
-    //   borderColor: 'rgba(148,159,177,1)',
-    //   pointBackgroundColor: 'rgba(148,159,177,1)',
-    //   pointBorderColor: '#fff',
-    //   pointHoverBackgroundColor: '#fff',
-    //   pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    // },
-    // { // dark grey
-    //   backgroundColor: 'rgba(77,83,96,0.2)',
-    //   borderColor: 'rgba(77,83,96,1)',
-    //   pointBackgroundColor: 'rgba(77,83,96,1)',
-    //   pointBorderColor: '#fff',
-    //   pointHoverBackgroundColor: '#fff',
-    //   pointHoverBorderColor: 'rgba(77,83,96,1)'
-    // },
     { // red
       backgroundColor: 'rgba(255,0,0,0.3)',
       borderColor: 'red',

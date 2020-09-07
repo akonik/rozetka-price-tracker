@@ -62,11 +62,11 @@ export class PriceTrackerComponent implements OnInit, OnDestroy {
     let resp = this._client.trackProduct(request, (error, response: TrackProductResponse) => {
       if (!this._products)
         this._products = [];
-      
+
       this._products.push(response.toObject());
 
-      this.products$.pipe(take(1)).subscribe(value=>{
-        let products = [...value,response.toObject()];
+      this.products$.pipe(take(1)).subscribe(value => {
+        let products = [...value, response.toObject()];
         this.productsBehaviorSubject.next(products);
       });
     });

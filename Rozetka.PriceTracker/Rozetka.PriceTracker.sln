@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rozetka.PriceTracker.Models
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rozetka.PriceTracker.EntityFramework", "Rozetka.PriceTracker.EntityFramework\Rozetka.PriceTracker.EntityFramework.csproj", "{1C02F353-4C1F-4D17-8866-728743892385}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rozetka.PriceTracker.BackgroundWorkers", "Rozetka.PriceTracker.BackgroundWorkers\Rozetka.PriceTracker.BackgroundWorkers.csproj", "{5F66A6BD-0E2F-4B78-85D4-947E37CF9CC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rozetka.PriceTracker.BackgroundWorkers", "Rozetka.PriceTracker.BackgroundWorkers\Rozetka.PriceTracker.BackgroundWorkers.csproj", "{5F66A6BD-0E2F-4B78-85D4-947E37CF9CC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

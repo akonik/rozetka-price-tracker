@@ -122,3 +122,4 @@ dist
 
 /Rozetka.PriceTracker/.vs
 /Rozetka.PriceTracker/Rozetka.PriceTracker.Grpc/*.user
+/Rozetka.PriceTracker/Rozetka.PriceTracker.Mediator/obj
